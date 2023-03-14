@@ -1,0 +1,100 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Halfmoon/1.0.4/css/halfmoon.min.css" />
+</head>
+
+<body class="with-custom-webkit-scrollbars with-custom-css-scrollbars dark-mode text-center">
+    <form class="m-auto w-three-quarter">
+    <h1>Waifu Generator</h1>
+    <h4>{{ "{:,}".format(total_waifu_count) }} waifus and counting...</h4>
+    <div class="form-group">
+        <select class="form-control" id="model" required="required">
+            {% for model in cfg.get("models") %}
+                <option value="{{model}}">{{model}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <input class="form-control" maxlength="77" id="prompt" placeholder="Describe the image that you want to generate in a few words"></input>
+    </div>
+
+
+    <h4 id="queue_info" display="none"></h4><br>
+    <input class="btn btn-primary" id="generate_button" value="Generate" onclick="send_prompt();">
+
+    <br><br>
+
+    <img width="100%" id="generated_image" style="display: block; border-style: solid; border-width: 3px; display: none; max-width: 512px; margin-left: auto; margin-right: auto;" />
+    </form>
+
+    <div class="text-monospace text-center my-10">Made with &lt;3 by
+        <a class="text-muted" href="https://github.com/qwertyquerty">Madeline</a>
+    </div>
+</body>
+
+<script>
+    var queue_item = null;
+
+    function send_prompt() {
+        var p = encodeURIComponent(document.getElementById("prompt").value);
+        var m = encodeURIComponent(document.getElementById("model").value);
+
+        fetch(`/generate?prompt=${p}&model=${m}`).then(function(res) {
+            return res.json()
+        }).then(function(data) {
+            if (data.status == "QUEUED") {
+                queue_item = data;
+            }
+
+            set_queue(data);
+        })
+
+        document.getElementById("generate_button").style.display = "none";
+        document.getElementById("generated_image").style.display = "none";
+        document.getElementById("queue_info").style.display = "inline-block";
+        document.getElementById("queue_info").innerHTML = `...`;
+    }
+
+    setInterval(function() {
+        if (queue_item != null && queue_item.status != "FINISHED" && queue_item.status != "ERROR") {
+            fetch(`/queue/${queue_item.id}`).then(function(res) {
+                return res.json()
+            }).then(function(data) {
+                queue_item = data;
+                set_queue(queue_item);
+            })
+        }
+    }, 1000)
+
+    function set_image(id) {
+        document.getElementById("generated_image").src = `/image/${id}`;
+    }
+
+    function set_queue(queue_item) {
+        if (queue_item.status == "ERROR") {
+            document.getElementById("queue_info").style.display = "inline-block";
+            document.getElementById("queue_info").innerHTML = queue_item.message;
+            document.getElementById("generate_button").style.display = "inline-block";
+            document.getElementById("generated_image").style.display = "none";
+        }
+        else if (queue_item.status == "FINISHED") {
+            document.getElementById("queue_info").style.display = "none";
+            document.getElementById("generate_button").style.display = "inline-block";
+            document.getElementById("generated_image").style.display = "block";
+            set_image(queue_item.id);
+        }
+        else if (queue_item.position > 0) {
+            document.getElementById("queue_info").style.display = "inline-block";
+            document.getElementById("queue_info").innerHTML = `Waiting in queue... (${queue_item.position})`;
+            document.getElementById("generate_button").style.display = "none";
+            document.getElementById("generated_image").style.display = "none";
+        }
+        else {
+            document.getElementById("queue_info").style.display = "inline-block";
+            document.getElementById("queue_info").innerHTML = `Generating image...`;
+            document.getElementById("generate_button").style.display = "none";
+            document.getElementById("generated_image").style.display = "none";
+        }
+    }
+</script>

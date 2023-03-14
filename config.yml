@@ -1,0 +1,18 @@
+website:
+  port: 8080
+
+cache_size: 1000
+queue_per_ip: 3
+negative_prompt: "young, child, cp, underage, loli, shota, kid, toddler"
+inference_steps: 50
+
+models:
+  - "andite/anything-v4.0"
+  - "katakana/2D-Mix"
+
+db:
+  host: $WAIFU_DB_HOST
+  port: $WAIFU_DB_PORT
+  user: $WAIFU_DB_USER
+  pass: $WAIFU_DB_PASS
+  name: $WAIFU_DB_NAME

@@ -1,0 +1,5 @@
+config.env
+venv
+frp.ini
+frpc.exe
+__pycache__

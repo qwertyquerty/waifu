@@ -1,0 +1,21 @@
+envyaml==1.9.210927
+flask==2.2
+flask-apispec
+flask-marshmallow==0.14.0
+flask-restful==0.3.9
+flask-sqlalchemy==3.0.3
+marshmallow-sqlalchemy==0.26.1
+mysql-connector-python==8.0.27
+python-dotenv==0.19.0
+werkzeug==2.2.2
+
+--extra-index-url https://download.pytorch.org/whl/cu117
+torch==1.13.1+cu117
+--extra-index-url https://download.pytorch.org/whl/cu117
+torchvision==0.14.1+cu117
+--extra-index-url https://download.pytorch.org/whl/cu117
+torchaudio==0.13.1+cu117
+
+diffusers==0.14.0
+transformers==4.26.1
+accelerate==0.17.0
