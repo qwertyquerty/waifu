@@ -99,6 +99,7 @@ with app.app_context():
         try:
             db_ext.session.commit()
             db_ext.session.begin()
+            db_ext.session.flush()
 
             claimed = Prompt.query.filter(Prompt.worker == WORKER_ID, Prompt.status == "GENERATING", Prompt.model.in_(cfg.get("models"))).all()
 
@@ -112,7 +113,7 @@ with app.app_context():
                     claim(stale[0])
                     continue
 
-                queued = Prompt.query.filter(Prompt.status == "QUEUED").order_by(Prompt.request_timestamp.asc(), Prompt.model.in_(cfg.get("models"))).all()
+                queued = Prompt.query.filter(Prompt.status == "QUEUED", Prompt.model.in_(cfg.get("models"))).order_by(Prompt.request_timestamp.asc()).all()
 
                 if len(queued):
                     claim(queued[0])
