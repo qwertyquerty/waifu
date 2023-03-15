@@ -63,6 +63,7 @@ with warnings.catch_warnings():
         pipe = StableDiffusionPipeline.from_pretrained(model, torch_dtype=torch.float16)
         pipe = pipe.to("cuda")
         pipe.safety_checker = lambda images, clip_input: (images, False)
+        pipe.enable_attention_slicing()
         pipes[model] = pipe
 
 logger.info("Ready!")
@@ -100,7 +101,7 @@ with app.app_context():
             if len(claimed) > 0:
                 generate(claimed[0])
             else:
-                stale = Prompt.query.filter(Prompt.status == "GENERATING", Prompt.claim_timestamp >= (datetime.utcnow() + timedelta(seconds=60)), Prompt.model.in_(cfg.get("models"))).all()
+                stale = Prompt.query.filter(Prompt.status == "GENERATING", Prompt.claim_timestamp <= (datetime.utcnow() - timedelta(seconds=60)), Prompt.model.in_(cfg.get("models"))).all()
 
                 if len(stale):
                     logger.warn(f"Claiming stale job [{stale[0].id}] from worker {stale[0].worker}")
