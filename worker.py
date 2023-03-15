@@ -95,19 +95,19 @@ def generate(prompt):
 with app.app_context():
     while True:
         try:
-            claimed = Prompt.query.filter(Prompt.worker == WORKER_ID, Prompt.status == "GENERATING").all()
+            claimed = Prompt.query.filter(Prompt.worker == WORKER_ID, Prompt.status == "GENERATING", Prompt.model.in_(cfg.get("models"))).all()
 
             if len(claimed) > 0:
                 generate(claimed[0])
             else:
-                stale = Prompt.query.filter(Prompt.status == "GENERATING", Prompt.claim_timestamp >= (datetime.utcnow() + timedelta(seconds=60))).all()
+                stale = Prompt.query.filter(Prompt.status == "GENERATING", Prompt.claim_timestamp >= (datetime.utcnow() + timedelta(seconds=60)), Prompt.model.in_(cfg.get("models"))).all()
 
                 if len(stale):
                     logger.warn(f"Claiming stale job [{stale[0].id}] from worker {stale[0].worker}")
                     claim(stale[0])
                     continue
 
-                queued = Prompt.query.filter(Prompt.status == "QUEUED").order_by(Prompt.request_timestamp.asc()).all()
+                queued = Prompt.query.filter(Prompt.status == "QUEUED").order_by(Prompt.request_timestamp.asc(), Prompt.model.in_(cfg.get("models"))).all()
 
                 if len(queued):
                     claim(queued[0])
