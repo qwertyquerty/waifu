@@ -63,7 +63,8 @@ with warnings.catch_warnings():
         pipe = StableDiffusionPipeline.from_pretrained(model, torch_dtype=torch.float16)
         pipe = pipe.to("cuda")
         pipe.safety_checker = lambda images, clip_input: (images, False)
-        pipe.enable_attention_slicing()
+        if cfg.get("enable_attention_slicing"):
+            pipe.enable_attention_slicing()
         pipes[model] = pipe
 
 logger.info("Ready!")
