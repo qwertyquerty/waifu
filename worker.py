@@ -109,7 +109,7 @@ with app.app_context():
                 stale = Prompt.query.filter(Prompt.status == "GENERATING", Prompt.claim_timestamp <= (datetime.utcnow() - timedelta(seconds=60)), Prompt.model.in_(cfg.get("models"))).all()
 
                 if len(stale):
-                    logger.warn(f"Claiming stale job [{stale[0].id}] from worker {stale[0].worker}")
+                    logger.warning(f"Claiming stale job [{stale[0].id}] from worker {stale[0].worker}")
                     claim(stale[0])
                     continue
 
