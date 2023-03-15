@@ -3,3 +3,4 @@ venv
 frp.ini
 frpc.exe
 __pycache__
+run_worker.bat
