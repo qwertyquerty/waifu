@@ -97,6 +97,9 @@ def generate(prompt):
 with app.app_context():
     while True:
         try:
+            db_ext.session.commit()
+            db_ext.session.begin()
+
             claimed = Prompt.query.filter(Prompt.worker == WORKER_ID, Prompt.status == "GENERATING", Prompt.model.in_(cfg.get("models"))).all()
 
             if len(claimed) > 0:
@@ -117,9 +120,7 @@ with app.app_context():
                     continue
             
             time.sleep(1)
-            db_ext.session.commit()
-            db_ext.session.begin()
-        
+
         except Exception as e:
             logger.error(f"Error in job cycle: {e}")
             db_ext.session.rollback()
