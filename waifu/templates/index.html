@@ -1,18 +1,29 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Halfmoon/1.0.4/css/halfmoon.min.css" />
+
+    <style>
+    @media only screen and (max-width: 768px) {
+        .mobile {
+            display: block;
+        }
+        .desktop {
+            display: none;
+        }
+    }
+
+    @media only screen and (min-width: 768px) {
+        .desktop {
+            display: block;
+        }
+        .mobile {
+            display: none;
+        }
+    }
+    </style>
 </head>
 
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars dark-mode text-center">
-    <div style="width:728px;height:90px; margin: auto;">
-        <script id="adn-4793005" type="text/javascript" class="" style="">
-            (function (node) {
-                var adn = document.createElement("script");
-                adn.type = "text/javascript", adn.async = true, adn.src = "//a.medfoodsafety.com/warp?id=4793005&r=" + Math.floor(Math.random() * 99999) + "";
-                node.appendChild(adn);
-            })(document.getElementsByTagName("script")[document.getElementsByTagName("script").length - 1].parentNode)
-        </script>
-    </div>
     <form class="m-auto w-three-quarter">
     <h1>Waifu Generator</h1>
     <h4>{{ "{:,}".format(total_waifu_count) }} waifus and counting...</h4>
@@ -37,7 +48,17 @@
 
     <i class="my-10 text-muted">Images created under the <a href="https://raw.githubusercontent.com/CompVis/stable-diffusion/main/LICENSE">CreativeML Open RAIL-M</a> license</i>
 
-    <div style="width:320px;height:50px; margin: auto;">
+    <div style="width:728px;height:90px; margin: auto;" class="desktop">
+        <script id="adn-4793005" type="text/javascript" class="" style="">
+            (function (node) {
+                var adn = document.createElement("script");
+                adn.type = "text/javascript", adn.async = true, adn.src = "//a.medfoodsafety.com/warp?id=4793005&r=" + Math.floor(Math.random() * 99999) + "";
+                node.appendChild(adn);
+            })(document.getElementsByTagName("script")[document.getElementsByTagName("script").length - 1].parentNode)
+        </script>
+    </div>
+
+    <div style="width:320px;height:50px; margin: auto;" class="mobile">
         <script id="adn-4793004" type="text/javascript" class="" style="">
             (function (node) {
                 var adn = document.createElement("script");
