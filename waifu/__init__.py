@@ -30,6 +30,10 @@ def index_page():
 def send_static_content(path):
     return send_from_directory("static", path)
 
+@app.route("/ads.txt")
+def ads_txt():
+    return send_from_directory("static", "ads.txt")
+
 parser.location = "query"
 
 @parser.error_handler
