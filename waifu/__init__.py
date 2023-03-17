@@ -34,10 +34,6 @@ def send_static_content(path):
 def ads_txt():
     return send_from_directory("static", "ads.txt")
 
-@app.route("/adn_verify.txt")
-def adn_verify():
-    return send_from_directory("static", "adn_verify.txt")
-
 
 parser.location = "query"
 
