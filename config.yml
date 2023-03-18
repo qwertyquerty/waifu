@@ -3,7 +3,7 @@ website:
 
 cache_size: 1000
 queue_per_ip: 3
-negative_prompt: "young, child, cp, underage, loli, shota, kid, toddler"
+negative_prompt: "young, child, underage, lolicon, shotacon, loli, shota, toddler, minor"
 inference_steps: 50
 enable_attention_slicing: false
 

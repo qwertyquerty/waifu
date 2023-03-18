@@ -10,6 +10,8 @@ from flask import abort, send_file, request, jsonify
 
 from io import BytesIO
 
+import re
+
 class PromptRequestSchema(Schema):
     prompt = fields.String(validate=marshmallow.validate.Length(max=80), required=True)
     model = fields.String(validate=marshmallow.validate.Length(min=3, max=32), required=True)
@@ -50,7 +52,14 @@ class RequestResource(MethodResource):
         if current_ip_queues >= cfg.get("queue_per_ip"):
             return jsonify({"status": "ERROR", "message": f"Your IP address already has {cfg.get('queue_per_ip')} images queued!"})
         
-        prompt = Prompt.add_to_queue(kwargs["prompt"], kwargs["model"], ip)
+        prompt_text = kwargs["prompt"]
+
+        bad_tokens = cfg.get("negative_prompt").split(", ")
+
+        for bad_token in bad_tokens:
+            prompt_text = prompt_text.replace(bad_token, "")
+
+        prompt = Prompt.add_to_queue(prompt_text, kwargs["model"], ip)
         queue_pos = prompt.queue_rank()
 
         db_ext.session.commit()
