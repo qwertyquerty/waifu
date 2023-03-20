@@ -52,7 +52,7 @@ class RequestResource(MethodResource):
         if current_ip_queues >= cfg.get("queue_per_ip"):
             return jsonify({"status": "ERROR", "message": f"Your IP address already has {cfg.get('queue_per_ip')} images queued!"})
         
-        prompt_text = kwargs["prompt"]
+        prompt_text = kwargs["prompt"].lower()
 
         bad_tokens = cfg.get("negative_prompt").split(", ")
 
