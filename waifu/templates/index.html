@@ -1,6 +1,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Halfmoon/1.0.4/css/halfmoon.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Halfmoon/1.1.1/css/halfmoon.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 
     <style>
     @media only screen and (max-width: 768px) {
@@ -47,8 +48,15 @@
     </div>
 
     </form>
-    <h4 id="queue_info" display="none"></h4><br>
-    <button class="btn btn-primary" id="generate_button" onclick="send_prompt();">Generate</button>
+    <div class="m-auto w-three-quarter">
+        <button class="btn btn-primary" id="generate_button" onclick="send_prompt();">Generate</button>
+        <h4 id="queue_info" display="none"></h4><br>
+
+        <div class="progress" id="generate_progress" style="display: none;">
+            <div class="progress-bar" id="generate_progress_bar" role="progressbar" style="height: 100%;"></div>
+        </div>
+    </div>
+
     <br><br>
 
     <img width="100%" id="generated_image" style="display: block; border-style: solid; border-width: 3px; display: none; max-width: 512px; margin-left: auto; margin-right: auto;" />
@@ -67,8 +75,8 @@
     var queue_item = null;
 
     function send_prompt() {
-        var p = encodeURIComponent(document.getElementById("prompt").value);
-        var m = encodeURIComponent(document.getElementById("model").value);
+        var p = encodeURIComponent($("#prompt").val());
+        var m = encodeURIComponent($("#model").val());
 
         fetch(`/generate?prompt=${p}&model=${m}`).then(function(res) {
             return res.json()
@@ -80,10 +88,10 @@
             set_queue(data);
         })
 
-        document.getElementById("generate_button").style.display = "none";
-        document.getElementById("generated_image").style.display = "none";
-        document.getElementById("queue_info").style.display = "inline-block";
-        document.getElementById("queue_info").innerHTML = `...`;
+        $("#generate_button").css("display", "none");
+        $("#queue_info").css("display", "inline-block");
+        $("#queue_info").html("...");
+        $("#generate_progress_bar").css("width", '0%');
     }
 
     setInterval(function() {
@@ -98,33 +106,35 @@
     }, 1000)
 
     function set_image(id) {
-        document.getElementById("generated_image").src = `/image/${id}`;
+        $("#generated_image").attr("src", `/image/${id}`);
     }
 
     function set_queue(queue_item) {
         if (queue_item.status == "ERROR") {
-            document.getElementById("queue_info").style.display = "inline-block";
-            document.getElementById("queue_info").innerHTML = queue_item.message;
-            document.getElementById("generate_button").style.display = "inline-block";
-            document.getElementById("generated_image").style.display = "none";
+            $("#queue_info").css("display", "inline-block");
+            $("#queue_info").html(queue_item.message);
+            $("#generate_button").css("display", "inline-block");
+            $("#generate_progress").css("display", "none");
         }
         else if (queue_item.status == "FINISHED") {
-            document.getElementById("queue_info").style.display = "none";
-            document.getElementById("generate_button").style.display = "inline-block";
-            document.getElementById("generated_image").style.display = "block";
+            $("#queue_info").css("display", "none");
+            $("#generate_button").css("display", "inline-block");
+            $("#generated_image").css("display", "block");
+            $("#generate_progress").css("display", "none");
             set_image(queue_item.id);
         }
         else if (queue_item.position > 0) {
-            document.getElementById("queue_info").style.display = "inline-block";
-            document.getElementById("queue_info").innerHTML = `Waiting in queue... (${queue_item.position})`;
-            document.getElementById("generate_button").style.display = "none";
-            document.getElementById("generated_image").style.display = "none";
+            $("#queue_info").css("display", "inline-block");
+            $("#queue_info").html(`Waiting in queue... (${queue_item.position})`);
+            $("#generate_button").css("display", "none");
+            $("#generate_progress").css("display", "none");
         }
         else {
-            document.getElementById("queue_info").style.display = "inline-block";
-            document.getElementById("queue_info").innerHTML = `Generating image...`;
-            document.getElementById("generate_button").style.display = "none";
-            document.getElementById("generated_image").style.display = "none";
+            $("#queue_info").css("display", "inline-block");
+            $("#queue_info").html(`Generating image...`);
+            $("#generate_button").css("display", "none");
+            $("#generate_progress").css("display", "block");
+            $("#generate_progress_bar").animate({width: `${queue_item.progress}%`});
         }
     }
 </script>

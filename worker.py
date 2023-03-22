@@ -75,11 +75,20 @@ def claim(prompt):
     prompt.worker = WORKER_ID
     db_ext.session.commit()
 
+def generation_callback(prompt, args):
+    step = args[0]
+    percent = int((step / cfg.get("inference_steps")) * 100)
+
+    if percent % 10 == 0:
+        prompt.progress = percent
+        db_ext.session.commit()
+        db_ext.session.begin()
+
 def generate(prompt):
     logger.info(f"Generating prompt [{prompt.id}] with model {prompt.model}")
 
     pipe = pipes[prompt.model]
-    image = pipe(prompt.prompt, num_inference_steps=cfg.get("inference_steps"), negative_prompt=cfg.get("negative_prompt")).images[0]
+    image = pipe(prompt.prompt, num_inference_steps=cfg.get("inference_steps"), negative_prompt=cfg.get("negative_prompt"), callback=lambda *args: generation_callback(prompt, args)).images[0]
     image_io = BytesIO()
     image.save(image_io, format="PNG")
     image_io.seek(0)

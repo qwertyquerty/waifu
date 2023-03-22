@@ -26,7 +26,7 @@ class QueueResource(MethodResource):
         queue_pos = prompt.queue_rank()
 
         if prompt:
-            return jsonify({"id": prompt.id, "status": prompt.status, "position": queue_pos})
+            return jsonify({"id": prompt.id, "status": prompt.status, "position": queue_pos, "progress": prompt.progress})
 
 class ImageResource(MethodResource):
     def get(self, id):
@@ -64,4 +64,4 @@ class RequestResource(MethodResource):
 
         db_ext.session.commit()
 
-        return jsonify({"id": prompt.id, "status": prompt.status, "position": queue_pos})
+        return jsonify({"id": prompt.id, "status": prompt.status, "position": queue_pos, "progress": prompt.progress})

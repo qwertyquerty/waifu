@@ -11,7 +11,7 @@ CREATE DATABASE IF NOT EXISTS `waifu` /*!40100 DEFAULT CHARACTER SET utf8mb4 COL
 USE `waifu`;
 
 CREATE TABLE IF NOT EXISTS `image_cache` (
-  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `timestamp` timestamp NOT NULL,
   `image` mediumblob NOT NULL,
   PRIMARY KEY (`id`),
@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `prompt_queue` (
   `finish_timestamp` datetime DEFAULT NULL,
   `prompt` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `model` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `progress` tinyint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `ip` (`ip`),

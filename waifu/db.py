@@ -3,7 +3,7 @@ from waifu import db_ext, ma_ext
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy import Column, DateTime, String, Enum, LargeBinary
+from sqlalchemy import Column, DateTime, String, Enum, LargeBinary, Integer
 
 from hashlib import md5
 import time
@@ -23,6 +23,7 @@ class Prompt(db_ext.Model):
     finish_timestamp = Column("finish_timestamp", DateTime())
     prompt = Column("prompt", String(80))
     model = Column("model", String(32))
+    progress = Column("progress", Integer())
 
     @classmethod
     def add_to_queue(cls, prompt, model, ip):
@@ -32,7 +33,8 @@ class Prompt(db_ext.Model):
             status = "QUEUED",
             prompt = prompt,
             model = model,
-            request_timestamp = datetime.utcnow()
+            request_timestamp = datetime.utcnow(),
+            progress = 0
         )
 
         db_ext.session.add(prompt)
