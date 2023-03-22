@@ -55,7 +55,7 @@
 		<br><br><br>
         
         <form class="m-auto w-three-quarter" onsubmit="return false;">
-            <h4>{{ "{:,}".format(total_waifu_count) }} waifus and counting...</h4>
+            <h4><i>{{ "{:,}".format(total_waifu_count) }} waifus and counting...</i></h4>
             <div class="form-group">
                 <select class="form-control" id="model" required="required">
                     {% for model in cfg.get("models") %}
@@ -64,15 +64,17 @@
                 </select>
             </div>
             
-            <div class="form-group">
-                <input class="form-control" maxlength="77" id="prompt" placeholder="Describe the image that you want to generate in a few words"></input>
-            </div>
+			<div class="input-group">
+				<input class="form-control" maxlength="77" id="prompt" placeholder="Describe your waifu in 77 characters or less"></input>
+				<div class="input-group-append">
+					<button class="btn btn-primary" id="generate_button" onclick="send_prompt();">Generate</button>
+				</div>
+			</div>
             
         </form>
         
         <div class="m-auto w-three-quarter">
-            <button class="btn btn-primary" id="generate_button" onclick="send_prompt();">Generate</button>
-            <h4 id="queue_info" display="none"></h4><br>
+            <h4 id="queue_info" display="block">&nbsp;</h4>
             
             <div class="progress" id="generate_progress" style="display: none;">
                 <div class="progress-bar" id="generate_progress_bar" role="progressbar" style="height: 100%;"></div>
@@ -118,8 +120,7 @@
                 set_queue(data);
             })
             
-            $("#generate_button").css("display", "none");
-            $("#queue_info").css("display", "inline-block");
+            $("#generate_button").prop("disabled", true);
             $("#queue_info").html("...");
             $("#generate_progress_bar").css("width", '0%');
         }
@@ -144,26 +145,24 @@
         if (queue_item.status == "ERROR") {
             $("#queue_info").css("display", "inline-block");
             $("#queue_info").html(queue_item.message);
-            $("#generate_button").css("display", "inline-block");
+            $("#generate_button").prop("disabled", false);
             $("#generate_progress").css("display", "none");
         }
         else if (queue_item.status == "FINISHED") {
-            $("#queue_info").css("display", "none");
-            $("#generate_button").css("display", "inline-block");
+			$("#queue_info").html("");
+            $("#generate_button").prop("disabled", false);
             $("#generated_image").css("display", "block");
             $("#generate_progress").css("display", "none");
             set_image(queue_item.id);
         }
         else if (queue_item.position > 0) {
-            $("#queue_info").css("display", "inline-block");
             $("#queue_info").html(`Waiting in queue... (${queue_item.position})`);
-            $("#generate_button").css("display", "none");
+            $("#generate_button").prop("disabled", true);
             $("#generate_progress").css("display", "none");
         }
         else {
-            $("#queue_info").css("display", "inline-block");
             $("#queue_info").html(`Generating image...`);
-            $("#generate_button").css("display", "none");
+            $("#generate_button").prop("disabled", true);
             $("#generate_progress").css("display", "block");
             $("#generate_progress_bar").animate({width: `${queue_item.progress}%`});
         }
