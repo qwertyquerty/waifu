@@ -1,28 +1,30 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Halfmoon/1.1.1/css/halfmoon.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Halfmoon/1.1.1/js/halfmoon.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-
+    <script src="https://kit.fontawesome.com/c04ca9b4bd.js" crossorigin="anonymous"></script>
+    
     <style>
-    @media only screen and (max-width: 768px) {
-        .mobile {
-            display: block !important;
+        @media only screen and (max-width: 768px) {
+            .mobile {
+                display: block !important;
+            }
+            .desktop {
+                display: none !important;
+            }
         }
-        .desktop {
-            display: none !important;
+        
+        @media only screen and (min-width: 768px) {
+            .desktop {
+                display: block !important;
+            }
+            .mobile {
+                display: none !important;
+            }
         }
-    }
-
-    @media only screen and (min-width: 768px) {
-        .desktop {
-            display: block !important;
-        }
-        .mobile {
-            display: none !important;
-        }
-    }
     </style>
-
+    
     <title>Waifu Generator</title>
     <meta property="og:title" content="Waifu Generator" />
     <meta property="og:site_name" content="Madeline" />
@@ -32,68 +34,97 @@
 </head>
 
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars dark-mode text-center">
-    <form class="m-auto w-three-quarter">
-    <h1>Waifu Generator</h1>
-    <h4>{{ "{:,}".format(total_waifu_count) }} waifus and counting...</h4>
-    <div class="form-group">
-        <select class="form-control" id="model" required="required">
-            {% for model in cfg.get("models") %}
-                <option value="{{model}}">{{model}}</option>
-            {% endfor %}
-        </select>
-    </div>
+    <div class="page-wrapper with-navbar">
+        <nav class="navbar">
+            <a href="#" class="navbar-brand">
+                Waifu Generator
+            </a>
+            
+            <span class="navbar-text text-monospace">v1.1</span>
+            
+            <ul class="navbar-nav d-md-flex ml-auto">
+                <li class="nav-item">
+                    <a href="https://discord.gg/SAyPEAPys4" class="nav-link"><i class="fa-brands fa-discord"></i>&nbsp;Discord</a>
+                </li>
+                <li class="nav-item">
+                    <a href="mailto:qwertytrogi@gmail.com" class="nav-link"><i class="fa-solid fa-envelope"></i>&nbsp;Contact</a>
+                </li>
+            </ul>
+        </nav>
 
-    <div class="form-group">
-        <input class="form-control" maxlength="77" id="prompt" placeholder="Describe the image that you want to generate in a few words"></input>
-    </div>
-
-    </form>
-    <div class="m-auto w-three-quarter">
-        <button class="btn btn-primary" id="generate_button" onclick="send_prompt();">Generate</button>
-        <h4 id="queue_info" display="none"></h4><br>
-
-        <div class="progress" id="generate_progress" style="display: none;">
-            <div class="progress-bar" id="generate_progress_bar" role="progressbar" style="height: 100%;"></div>
+		<br><br><br>
+        
+        <form class="m-auto w-three-quarter" onsubmit="return false;">
+            <h4>{{ "{:,}".format(total_waifu_count) }} waifus and counting...</h4>
+            <div class="form-group">
+                <select class="form-control" id="model" required="required">
+                    {% for model in cfg.get("models") %}
+                    <option value="{{model}}">{{model}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <input class="form-control" maxlength="77" id="prompt" placeholder="Describe the image that you want to generate in a few words"></input>
+            </div>
+            
+        </form>
+        
+        <div class="m-auto w-three-quarter">
+            <button class="btn btn-primary" id="generate_button" onclick="send_prompt();">Generate</button>
+            <h4 id="queue_info" display="none"></h4><br>
+            
+            <div class="progress" id="generate_progress" style="display: none;">
+                <div class="progress-bar" id="generate_progress_bar" role="progressbar" style="height: 100%;"></div>
+            </div>
+        </div>
+        
+        <br>
+        
+        <i class="my-10 text-muted">Images created under the <a href="https://raw.githubusercontent.com/CompVis/stable-diffusion/main/LICENSE">CreativeML Open RAIL-M</a> license</i><br>
+        <i class="my-10 text-muted" style="margin-bottom: 1em;">By clicking "generate" you verify that you are 18 years of age or older</i>
+        
+        <br><br>
+        
+        <img width="100%" id="generated_image" style="display: block; border-style: solid; border-width: 3px; display: none; max-width: 512px; margin-left: auto; margin-right: auto;" />
+        
+        <div class="text-monospace text-center my-10">Made with &lt;3 by
+            <a class="text-muted" href="https://github.com/qwertyquerty">Madeline</a>
         </div>
     </div>
-
-    <br><br>
-
-    <img width="100%" id="generated_image" style="display: block; border-style: solid; border-width: 3px; display: none; max-width: 512px; margin-left: auto; margin-right: auto;" />
-
-    <i class="my-10 text-muted">Images created under the <a href="https://raw.githubusercontent.com/CompVis/stable-diffusion/main/LICENSE">CreativeML Open RAIL-M</a> license</i><br>
-    <i class="my-10 text-muted" style="margin-bottom: 1em;">By clicking "generate" you verify that you are 18 years of age or older</i>
-
-    <div class="text-monospace text-center my-10">Made with &lt;3 by
-        <a class="text-muted" href="https://github.com/qwertyquerty">Madeline</a>
-    </div>
-
-    <i class="my-10 text-muted">Email me <a href="mailto:qwertytrogi@gmail.com">here</a> for suggestions or join the <a href="https://discord.gg/SAyPEAPys4">Discord</a></i>
 </body>
 
-<script>
+<script> 
+    $("#prompt").on('keyup', function (e) {
+        if (e.key === 'Enter') {
+            send_prompt();
+        }
+    });
+    
     var queue_item = null;
-
+    
     function send_prompt() {
-        var p = encodeURIComponent($("#prompt").val());
-        var m = encodeURIComponent($("#model").val());
-
-        fetch(`/generate?prompt=${p}&model=${m}`).then(function(res) {
-            return res.json()
-        }).then(function(data) {
-            if (data.status == "QUEUED") {
-                queue_item = data;
-            }
-
-            set_queue(data);
-        })
-
-        $("#generate_button").css("display", "none");
-        $("#queue_info").css("display", "inline-block");
-        $("#queue_info").html("...");
-        $("#generate_progress_bar").css("width", '0%');
+        if (queue_item == null || queue_item.status == "FINISHED" || queue_item.status == "ERROR") {
+            var p = encodeURIComponent($("#prompt").val());
+            var m = encodeURIComponent($("#model").val());
+            
+            fetch(`/generate?prompt=${p}&model=${m}`).then(function(res) {
+                return res.json()
+            }).then(function(data) {
+                if (data.status == "QUEUED") {
+                    queue_item = data;
+                }
+                
+                set_queue(data);
+            })
+            
+            $("#generate_button").css("display", "none");
+            $("#queue_info").css("display", "inline-block");
+            $("#queue_info").html("...");
+            $("#generate_progress_bar").css("width", '0%');
+        }
     }
-
+    
     setInterval(function() {
         if (queue_item != null && queue_item.status != "FINISHED" && queue_item.status != "ERROR") {
             fetch(`/queue/${queue_item.id}`).then(function(res) {
@@ -104,11 +135,11 @@
             })
         }
     }, 1000)
-
+    
     function set_image(id) {
         $("#generated_image").attr("src", `/image/${id}`);
     }
-
+    
     function set_queue(queue_item) {
         if (queue_item.status == "ERROR") {
             $("#queue_info").css("display", "inline-block");
