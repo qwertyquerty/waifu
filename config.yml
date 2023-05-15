@@ -9,7 +9,6 @@ enable_attention_slicing: false
 
 models:
   - "andite/anything-v4.0"
-  - "katakana/2D-Mix"
 
 db:
   host: $WAIFU_DB_HOST
